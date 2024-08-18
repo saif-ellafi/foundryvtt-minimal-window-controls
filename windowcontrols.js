@@ -11,6 +11,10 @@ class WindowControls {
   static cssTopBarPersistentLeftStart = -5;
   static cssBottomBarLeftStart = 250;
 
+  static defaultBlacklist =  [
+    "always-hp"
+  ];
+
   static getTaskbarTop = () => 2;
   static getTaskbarBot = () => $("#board").height() - 40;
 
@@ -294,13 +298,18 @@ class WindowControls {
   }
 
   static setRestoredStyle(app) {
-    app.element.find(".window-header > h4").text(WindowControls.uncurateTitle(app.title));
-    app.element.find(".minimize").empty();
-    app.element.find(".minimize").append(`<i class="far fa-window-minimize"></i>`);
-    if (app._pinned === true) {
-      app.element.find(".entry-image").hide();
-      app.element.find(".entry-text").hide();
-      app.element.find(".close").hide();
+    const appId = app.options.baseApplication ?? app.options.id;
+    const blacklist = game.settings.get('window-controls', 'appBlacklist');
+    if (blacklist.split(",").find(bId => bId.trim() === appId) != null) return;
+    else {
+      app.element.find(".window-header > h4").text(WindowControls.uncurateTitle(app.title));
+      app.element.find(".minimize").empty();
+      app.element.find(".minimize").append(`<i class="far fa-window-minimize"></i>`);
+      if (app._pinned === true) {
+        app.element.find(".entry-image").hide();
+        app.element.find(".entry-text").hide();
+        app.element.find(".close").hide();
+      }
     }
   }
 
@@ -560,6 +569,19 @@ class WindowControls {
         const rootStyle = document.querySelector(':root').style;
         rootStyle.setProperty('--taskbarcolor', newValue);
       }
+    });
+
+    game.settings.register('window-controls', 'appBlacklist', {
+      name: game.i18n.localize("WindowControls.AppBlacklistName"),
+      hint: game.i18n.localize("WindowControls.AppBlacklistHint"),
+      scope: 'world',
+      config: true,
+      requiresReload: true,
+      restricted: true,
+      type: new foundry.data.fields.StringField({
+        initial: defaultBlacklist.join(",")
+      }),
+      default: defaultBlacklist.join(",")
     });
   }
 
