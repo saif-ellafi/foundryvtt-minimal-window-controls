@@ -11,7 +11,7 @@ class WindowControls {
   static cssTopBarPersistentLeftStart = -5;
   static cssBottomBarLeftStart = 250;
 
-  static defaultBlacklist =  [
+  static defaultBlacklist = [
     "always-hp"
   ];
 
@@ -299,17 +299,20 @@ class WindowControls {
 
   static setRestoredStyle(app) {
     const appId = app.options.baseApplication ?? app.options.id;
-    const blacklist = game.settings.get('window-controls', 'appBlacklist');
-    if (blacklist.split(",").find(bId => bId.trim() === appId) != null) return;
-    else {
-      app.element.find(".window-header > h4").text(WindowControls.uncurateTitle(app.title));
-      app.element.find(".minimize").empty();
-      app.element.find(".minimize").append(`<i class="far fa-window-minimize"></i>`);
-      if (app._pinned === true) {
-        app.element.find(".entry-image").hide();
-        app.element.find(".entry-text").hide();
-        app.element.find(".close").hide();
-      }
+    try {
+      const blacklist = game.settings.get('window-controls', 'appBlacklist');
+      if (blacklist.split(",").find(bId => bId.trim() === appId) != null) return;
+    }
+    catch (e) {
+      console.warn("Blacklist formatted incorrectly.")
+    }
+    app.element.find(".window-header > h4").text(WindowControls.uncurateTitle(app.title));
+    app.element.find(".minimize").empty();
+    app.element.find(".minimize").append(`<i class="far fa-window-minimize"></i>`);
+    if (app._pinned === true) {
+      app.element.find(".entry-image").hide();
+      app.element.find(".entry-text").hide();
+      app.element.find(".close").hide();
     }
   }
 
