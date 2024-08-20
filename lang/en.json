@@ -35,6 +35,6 @@
   "WindowControls.TaskbarColorHint": "Color of the Taskbar when 'Top Taskbar' Organized Mode is enabled",
 
   "WindowControls.AppBlacklistName": "App Blacklist",
-  "WindowControls.AppBlacklistHint": "Apps that Window Controls should ignore. You need to know the app's ID or baseApplication via digging in code. Separate with comas."
+  "WindowControls.AppBlacklistHint": "Apps that Window Controls should ignore. You need to know the app's case sensitive name. Separate with comas."
 
 }
