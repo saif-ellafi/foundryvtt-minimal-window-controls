@@ -286,6 +286,14 @@ class WindowControls {
   }
 
   static setMinimizedStyle(app) {
+
+    try {
+      const blacklist = game.settings.get('window-controls', 'appBlacklist');
+      if (blacklist.split(",").find(bId => bId.trim() === app.constructor.name) != null) return;
+    }
+    catch (e) {
+      console.warn("Blacklist formatted incorrectly.")
+    }
     if (!app?.element) return;
     app.element.find(".window-header > h4").text(WindowControls.curateTitle(app.title));
     app.element.find(".minimize").empty();
@@ -294,6 +302,14 @@ class WindowControls {
   }
 
   static setRestoredStyle(app) {
+
+    try {
+      const blacklist = game.settings.get('window-controls', 'appBlacklist');
+      if (blacklist.split(",").find(bId => bId.trim() === app.constructor.name) != null) return;
+    }
+    catch (e) {
+      console.warn("Blacklist formatted incorrectly.")
+    }
     app.element.find(".window-header > h4").text(WindowControls.uncurateTitle(app.title));
     app.element.find(".minimize").empty();
     app.element.find(".minimize").append(`<i class="far fa-window-minimize"></i>`);
@@ -560,6 +576,23 @@ class WindowControls {
         const rootStyle = document.querySelector(':root').style;
         rootStyle.setProperty('--taskbarcolor', newValue);
       }
+    });
+
+
+    const defaultBlacklist = [
+      "AlwaysHP"
+    ];
+    game.settings.register('window-controls', 'appBlacklist', {
+      name: game.i18n.localize("WindowControls.AppBlacklistName"),
+      hint: game.i18n.localize("WindowControls.AppBlacklistHint"),
+      scope: 'world',
+      config: true,
+      requiresReload: true,
+      restricted: true,
+      type: new foundry.data.fields.StringField({
+        initial: defaultBlacklist.join(",")
+      }),
+      default: defaultBlacklist.join(",")
     });
   }
 
