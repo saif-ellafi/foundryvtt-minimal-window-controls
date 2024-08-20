@@ -11,10 +11,6 @@ class WindowControls {
   static cssTopBarPersistentLeftStart = -5;
   static cssBottomBarLeftStart = 250;
 
-  static defaultBlacklist = [
-    "always-hp"
-  ];
-
   static getTaskbarTop = () => 2;
   static getTaskbarBot = () => $("#board").height() - 40;
 
@@ -290,6 +286,14 @@ class WindowControls {
   }
 
   static setMinimizedStyle(app) {
+
+    try {
+      const blacklist = game.settings.get('window-controls', 'appBlacklist');
+      if (blacklist.split(",").find(bId => bId.trim() === app.constructor.name) != null) return;
+    }
+    catch (e) {
+      console.warn("Blacklist formatted incorrectly.")
+    }
     if (!app?.element) return;
     app.element.find(".window-header > h4").text(WindowControls.curateTitle(app.title));
     app.element.find(".minimize").empty();
@@ -298,10 +302,10 @@ class WindowControls {
   }
 
   static setRestoredStyle(app) {
-    const appId = app.options.baseApplication ?? app.options.id;
+
     try {
       const blacklist = game.settings.get('window-controls', 'appBlacklist');
-      if (blacklist.split(",").find(bId => bId.trim() === appId) != null) return;
+      if (blacklist.split(",").find(bId => bId.trim() === app.constructor.name) != null) return;
     }
     catch (e) {
       console.warn("Blacklist formatted incorrectly.")
@@ -574,6 +578,10 @@ class WindowControls {
       }
     });
 
+
+    const defaultBlacklist = [
+      "AlwaysHP"
+    ];
     game.settings.register('window-controls', 'appBlacklist', {
       name: game.i18n.localize("WindowControls.AppBlacklistName"),
       hint: game.i18n.localize("WindowControls.AppBlacklistHint"),
